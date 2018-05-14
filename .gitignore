@@ -1,2 +1,2 @@
-api/node_modules
-website/node_modules
+src/api/node_modules
+node_modules

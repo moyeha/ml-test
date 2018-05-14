@@ -65,7 +65,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const outputDirectory = 'dist';
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/website/index.js',
   output: {
     path: path.join(__dirname, outputDirectory),
     filename: 'bundle.js'
@@ -81,7 +81,42 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+          {
+            loader: "sass-loader" // compiles Sass to CSS
+          },
+          {
+            loader: 'postcss-loader', // Run post css actions
+            options: {
+                plugins: function () { // post css plugins, can be exported to postcss.config.js
+                return [
+                    require('precss'),
+                    require('autoprefixer')
+                ];
+                }
+            }
+          }          
+        ]
+      },      
+      {
+        test: /\.scss$/,
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+          {
+            loader: "sass-loader" // compiles Sass to CSS
+          }         
+        ]
       }
     ]
   },

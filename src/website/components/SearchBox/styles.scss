@@ -1,0 +1,18 @@
+form {
+    width: 100%;
+    .SearchBox {
+        input {
+            padding: 7px 60px 9px 15px;
+            border-radius: 2px;
+            border: 0;
+            margin: 5px 0px 10px 0px;
+            font-size: 18px;
+            color: #333;
+            width: 100%;
+            display: inline-block;
+            &::placeholder {
+                color: #666;
+            }
+        }
+    }
+}
