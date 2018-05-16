@@ -9,10 +9,6 @@ const router = express.Router({
 })
 
 const searchMap = item => ({
-    author: {
-        name: 'Pedro',
-        lastname: 'Moyano'
-    },
     id: item.id,
     title: item.title,
     price: {
@@ -47,21 +43,14 @@ router.all('/', (req, res) => {
     axios
         .get(`${SEARCH_ENDPOINT}?q=${req.query.q}`)
         .then(response => {
-            res.send(R.map(searchMap,response.data.results))
-        })
-        .catch(error => {
-            console.log('error', error)
-            res.send(error)
-        });
-})
-router.get('/:id', (req, res) => {
-    // res.send(`${ITEM_ENDPOINT}/${req.params.id}`)
-    // return
-    axios
-        .get(`${ITEM_ENDPOINT}/${req.params.id}`)
-        .then(response => {
-            res.send(itemMap(response.data))
-            // res.send(R.map(searchMap,response.data.results))
+            res.send({
+                author: {
+                    name: 'Pedro',
+                    lastname: 'Moyano'
+                },
+                items: R.take(4, R.map(searchMap,response.data.results)),
+                categories: response.data.filters[0].values[0].path_from_root
+            })
         })
         .catch(error => {
             console.log('error', error)
@@ -69,8 +58,21 @@ router.get('/:id', (req, res) => {
         });
 })
 
-router.get('/:id/:description', (req, res) => {
-    res.send(req.params)
+router.get('/:id/:description?', (req, res) => {
+    const path = R.ifElse(
+        R.propSatisfies(description => !R.isNil(description), 'description'),
+        (obj) => `${obj.id}/${obj.description}`,
+        (obj) => `${obj.id}`
+    )
+    axios
+        .get(`${ITEM_ENDPOINT}/${path(req.params)}`)
+        .then(response => {
+            res.send(itemMap(response.data))
+        })
+        .catch(error => {
+            console.log('error', error)
+            res.send(error)
+        });
 })
 
 export default router
