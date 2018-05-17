@@ -14,6 +14,8 @@ export default class List extends Component {
   }
 
   componentDidMount() {
+    const params = new URLSearchParams(this.props.location.search); 
+    console.log('params', params.get('search'))
     fetch('/api/items?q=iphone')
       .then(res => res.json())
       .then(({items}) => this.setState({items}));

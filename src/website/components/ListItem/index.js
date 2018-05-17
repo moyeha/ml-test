@@ -10,8 +10,12 @@ export default class Breadcrumbs extends Component {
   render() {
       console.log('lalala', this.state.item)
     return (
-      <div className="ListItem">
-        <img src={this.props.item.picture}/>
+      <div className="ListItem row">
+        <img width="180" height="180" src={this.props.item.picture}/>
+        <div>
+          <div>Precio</div>
+          <div>Descripcion</div>
+        </div>
       </div>
     );
   }

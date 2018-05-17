@@ -15,10 +15,10 @@ export default class SearchBox extends Component {
 
   render() {
     return (
-      <form>
+      <form method="type" action="/items">
         <div className="SearchBox col-12">
           <a href="#" className="search-logo">Logo</a>
-          <input type="text" placeholder="Search"/>
+          <input type="text" name="search" placeholder="Search"/>
         </div>
       </form>
     );
