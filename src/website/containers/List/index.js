@@ -3,22 +3,24 @@ import Header from './../../containers/Header'
 import Breadcrumbs from './../../components/Breadcrumbs'
 import ListItem from './../../components/ListItem'
 import styles from './styles.scss'
+import { Link } from 'react-router-dom'
+import Details from '../Details/'
 
 export default class List extends Component {
 
   constructor() {
     super()
     this.state = {
-      items: []
+      items: [],
+      categories: []
     }
   }
 
   componentDidMount() {
     const params = new URLSearchParams(this.props.location.search); 
-    console.log('params', params.get('search'))
-    fetch('/api/items?q=iphone')
+    fetch(`/api/items?q=${params.get('search')}`)
       .then(res => res.json())
-      .then(({items}) => this.setState({items}));
+      .then(({items, categories}) => this.setState({items, categories}));
   }
 
   render() {
@@ -27,10 +29,16 @@ export default class List extends Component {
         <Header>
         </Header>
         <div className="container">
-          <div className="row">
-            <Breadcrumbs data={['pepe', 'wfwefw']}></Breadcrumbs>
-          </div>
-          <div>{this.state.items.map(item => <ListItem item={item} />)}</div>
+          <Breadcrumbs data={this.state.categories}></Breadcrumbs>
+        </div>
+        <div className={styles.container + ' container'}>
+          <div className="list-container">
+            {this.state.items.map(item =>
+              <Link to={`/items/${item.id}`}>
+                <ListItem item={item} />
+              </Link>
+              )}
+          </div>  
         </div>
       </div>  
       )

@@ -16,6 +16,7 @@ const searchMap = item => ({
         amount: item.price,
         decimal: 0
     },
+    location: item.address.state_name,
     picture: item.thumbnail,
     condition: item.condition,
     free_shipping: item.shipping.free_shipping
@@ -39,7 +40,13 @@ const itemMap = item => ({
 })
 
 
-router.all('/', (req, res) => {
+router.get('/', (req, res) => {
+    // console.log('/', `${SEARCH_ENDPOINT}?q=${req.query.q}`)
+    const getCategories = R.ifElse(
+        (filters) => !R.isEmpty(filters),
+        (filters) => filters[0].values[0].path_from_root,
+        () => []
+    )
     axios
         .get(`${SEARCH_ENDPOINT}?q=${req.query.q}`)
         .then(response => {
@@ -49,16 +56,16 @@ router.all('/', (req, res) => {
                     lastname: 'Moyano'
                 },
                 items: R.take(4, R.map(searchMap,response.data.results)),
-                categories: response.data.filters[0].values[0].path_from_root
+                categories: getCategories(response.data.filters)
             })
         })
         .catch(error => {
-            console.log('error', error)
             res.send(error)
         });
 })
 
 router.get('/:id/:description?', (req, res) => {
+    console.log('/:id...', req.params)
     const path = R.ifElse(
         R.propSatisfies(description => !R.isNil(description), 'description'),
         (obj) => `${obj.id}/${obj.description}`,
@@ -67,6 +74,7 @@ router.get('/:id/:description?', (req, res) => {
     axios
         .get(`${ITEM_ENDPOINT}/${path(req.params)}`)
         .then(response => {
+            console.log('response', response)
             res.send(itemMap(response.data))
         })
         .catch(error => {
