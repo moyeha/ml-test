@@ -31,7 +31,7 @@ export default class List extends Component {
         <div className="container">
           <Breadcrumbs data={this.state.categories}></Breadcrumbs>
         </div>
-        <div className={styles.container + ' container'}>
+        <div className={styles.container + ' container box'}>
           <div className="list-container">
             {this.state.items.map(item =>
               <Link to={`/items/${item.id}`}>

@@ -34,14 +34,16 @@ const itemMap = item => ({
         amount: item.price,
         decimal: 0
     },
-    picture: item.thumbnail,
+    picture: item.pictures[0].url,
+    pictures: item.pictures.map(item => item.url),
     condition: item.condition,
-    free_shipping: item.free_shipping
+    free_shipping: item.free_shipping,
+    descriptions: item.descriptions
 })
 
 
 router.get('/', (req, res) => {
-    // console.log('/', `${SEARCH_ENDPOINT}?q=${req.query.q}`)
+    console.log('/', `Entro`)
     const getCategories = R.ifElse(
         (filters) => !R.isEmpty(filters),
         (filters) => filters[0].values[0].path_from_root,
@@ -65,7 +67,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/:id/:description?', (req, res) => {
-    console.log('/:id...', req.params)
+    // console.log('/:id...', req.params)
     const path = R.ifElse(
         R.propSatisfies(description => !R.isNil(description), 'description'),
         (obj) => `${obj.id}/${obj.description}`,
@@ -74,7 +76,7 @@ router.get('/:id/:description?', (req, res) => {
     axios
         .get(`${ITEM_ENDPOINT}/${path(req.params)}`)
         .then(response => {
-            console.log('response', response)
+            console.log('response', response.data)
             res.send(itemMap(response.data))
         })
         .catch(error => {
