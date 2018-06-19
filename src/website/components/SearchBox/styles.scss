@@ -2,17 +2,29 @@ form {
     width: 100%;
     .SearchBox {
         input {
-            padding: 7px 60px 9px 15px;
+            padding: 8px 60px 9px 15px;
             border-radius: 2px;
             border: 0;
             margin: 5px 0px 10px 0px;
             font-size: 18px;
             color: #333;
-            width: 100%;
+            width: 90%;
             display: inline-block;
+            outline: none;
             &::placeholder {
                 color: #666;
             }
+        }
+        button.ml-btn-search {
+            background-color: #eeeeee;
+            display: inline-block;
+            outline: 0;
+            border: none;
+            padding: 10px;
+            margin-left: -1px;
+            img {
+                height: 18px;
+            }            
         }
     }
 }

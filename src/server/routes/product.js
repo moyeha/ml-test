@@ -3,6 +3,7 @@ import axios from 'axios'
 import R from 'ramda'
 const SEARCH_ENDPOINT = 'https://api.mercadolibre.com/sites/MLA/search'
 const ITEM_ENDPOINT = 'https://api.mercadolibre.com/items'
+const ITEM_CATEGORY_ENDPOINT = 'https://api.mercadolibre.com/categories'
 
 const router = express.Router({
     mergeParams: true
@@ -22,7 +23,7 @@ const searchMap = item => ({
     free_shipping: item.shipping.free_shipping
 })
 
-const itemMap = item => ({
+const getDetail = (item, description, path) => ({
     author: {
         name: 'Pedro',
         lastname: 'Moyano'
@@ -38,17 +39,21 @@ const itemMap = item => ({
     pictures: item.pictures.map(item => item.url),
     condition: item.condition,
     free_shipping: item.free_shipping,
-    descriptions: item.descriptions
+    sold_quantity: item.sold_quantity,
+    description,
+    path: R.pluck('name')(path)
 })
 
+const getCategories = async (id) => axios.get(`${ITEM_CATEGORY_ENDPOINT}/${id}`)
+
+const getCategoriesFromFilter = R.pipe(
+    R.pluck('values'),
+    R.flatten,
+    R.pluck('path_from_root'),
+    R.flatten,
+    R.pluck('name'))
 
 router.get('/', (req, res) => {
-    console.log('/', `Entro`)
-    const getCategories = R.ifElse(
-        (filters) => !R.isEmpty(filters),
-        (filters) => filters[0].values[0].path_from_root,
-        () => []
-    )
     axios
         .get(`${SEARCH_ENDPOINT}?q=${req.query.q}`)
         .then(response => {
@@ -58,7 +63,7 @@ router.get('/', (req, res) => {
                     lastname: 'Moyano'
                 },
                 items: R.take(4, R.map(searchMap,response.data.results)),
-                categories: getCategories(response.data.filters)
+                path: getCategoriesFromFilter(R.pathOr([], ['filters'], response.data))
             })
         })
         .catch(error => {
@@ -66,23 +71,18 @@ router.get('/', (req, res) => {
         });
 })
 
-router.get('/:id/:description?', (req, res) => {
-    // console.log('/:id...', req.params)
-    const path = R.ifElse(
-        R.propSatisfies(description => !R.isNil(description), 'description'),
-        (obj) => `${obj.id}/${obj.description}`,
-        (obj) => `${obj.id}`
-    )
-    axios
-        .get(`${ITEM_ENDPOINT}/${path(req.params)}`)
-        .then(response => {
-            console.log('response', response.data)
-            res.send(itemMap(response.data))
-        })
-        .catch(error => {
-            console.log('error', error)
-            res.send(error)
-        });
+router.get('/:id', async (req, res) => {
+    try {
+        const [ detail, description] = await Promise.all([
+            axios.get(`${ITEM_ENDPOINT}/${req.params.id}`),
+            axios.get(`${ITEM_ENDPOINT}/${req.params.id}/description`)]
+        )
+        const { data: { path_from_root: path } } = await getCategories(detail.data.category_id)
+        res.send(getDetail(detail.data, description.data.plain_text, path))
+        
+    } catch (error) {
+        res.send(error)
+    }
 })
 
 export default router

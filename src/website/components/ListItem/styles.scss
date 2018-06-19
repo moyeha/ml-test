@@ -1,8 +1,37 @@
 .ListItem {
-    .picture {
+    picture.thumb {
         img {
             width: 180px;
             height: 180px;
+            object-fit: contain;
+            margin: 16px;
         }
+    }
+    .item-detail-container {
+        padding-top: 10px;
+        .price-container {
+            margin-bottom: 32px;
+            line-height: 24px;
+            height: 24px;
+            .amount {
+                font-size: 24px;
+                font-weight: 500;
+            }
+            button.free-shipping-button {
+                outline: none;
+                border: none;
+                display: inline-block;
+                vertical-align: text-bottom;
+                margin: 0;
+                background-color: transparent;
+            }
+        }
+        .item-title {
+            font-size: 18px;
+        }
+    }
+    .location {
+        padding-top: 10px;
+        font-size: 12px;
     }
 }

@@ -1,3 +1,4 @@
+import "babel-polyfill"
 import express from 'express'
 import productRouter from './routes/product'
 import path from 'path'
